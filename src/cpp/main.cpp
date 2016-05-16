@@ -69,6 +69,7 @@ int main(int argc, char *argv[]){
 		SudokuBoard::PrintStyle printStyle = SudokuBoard::READABLE;
 		int numberToGenerate = 1;
 		bool printStats = false;
+		int givenCells = 0;
 		SudokuBoard::Difficulty difficulty = SudokuBoard::UNKNOWN;
 		SudokuBoard::Symmetry symmetry = SudokuBoard::NONE;
 
@@ -155,6 +156,17 @@ int main(int argc, char *argv[]){
 					return 1;
 				}
 				i++;
+			} else if (!strcmp(argv[i],"--given-cells")){
+				if (argc <= i+1){
+					cout << "Please specify a number of given cells between 0 and " << BOARD_SIZE << "." << endl;
+					return 1;
+				}
+				givenCells = atoi(argv[i+1]);
+				if (givenCells < 0 || givenCells > BOARD_SIZE){
+					cout << "number of given cells expected to be in range [0-" << BOARD_SIZE << "]. receive: " << givenCells << endl;
+					return 1;
+				}
+				i++;
 			} else if (!strcmp(argv[i],"--solve")){
 				action = SOLVE;
 				printSolution = true;
@@ -201,7 +213,7 @@ int main(int argc, char *argv[]){
 		}
 
 		// Initialize the random number generator
-		srand ( unsigned ( time(0) ) );
+		srand ( unsigned ( time(NULL) ) );
 
 		// If printing out CSV, print a header
 		if (printStyle == SudokuBoard::CSV){
@@ -221,6 +233,7 @@ int main(int argc, char *argv[]){
 		ss->setRecordHistory(printHistory || printInstructions || printStats || difficulty!=SudokuBoard::UNKNOWN);
 		ss->setLogHistory(logHistory);
 		ss->setPrintStyle(printStyle);
+		ss->setNbGivenCells(givenCells);
 
 		// Solve puzzle or generate puzzles
 		// until end of input for solving, or
@@ -451,6 +464,7 @@ void printHelp(){
 	cout << "  --solve              Solve all the puzzles from standard input" << endl;
 	cout << "  --difficulty <diff>  Generate only simple, easy, intermediate, expert, or any" << endl;
 	cout << "  --symmetry <sym>     Symmetry: none, rotate90, rotate180, mirror, flip, or random" << endl;
+	cout << "  --given-cells <num>  Number of given cells according to sudoku games." << endl;
 	cout << "  --puzzle             Print the puzzle (default when generating)" << endl;
 	cout << "  --nopuzzle           Do not print the puzzle (default when solving)" << endl;
 	cout << "  --solution           Print the solution (default when solving)" << endl;
