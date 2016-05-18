@@ -42,6 +42,7 @@ bool readPuzzleFromStdIn(int* puzzle);
 void printHelp();
 void printVersion();
 void printAbout();
+unsigned long generateSeed(unsigned long a, unsigned long b, unsigned long c);
 
 /**
  * Main method -- the entry point into the program.
@@ -213,7 +214,7 @@ int main(int argc, char *argv[]){
 		}
 
 		// Initialize the random number generator
-		srand ( unsigned ( time(NULL) ) );
+		srand (generateSeed(clock(), time(NULL), getpid()));
 
 		// If printing out CSV, print a header
 		if (printStyle == SudokuBoard::CSV){
@@ -527,4 +528,19 @@ long getMicroseconds(){
 	#else
 		return 0;
 	#endif
+}
+
+// http://burtleburtle.net/bob/hash/doobs.html
+unsigned long generateSeed(unsigned long a, unsigned long b, unsigned long c)
+{
+	a=a-b; a=a-c; a=a^(c >> 13);
+	b=b-c; b=b-a; b=b^(a << 8);
+	c=c-a; c=c-b; c=c^(b >> 13);
+	a=a-b; a=a-c; a=a^(c >> 12);
+	b=b-c; b=b-a; b=b^(a << 16);
+	c=c-a; c=c-b; c=c^(b >> 5);
+	a=a-b; a=a-c; a=a^(c >> 3);
+	b=b-c; b=b-a; b=b^(a << 10);
+	c=c-a; c=c-b; c=c^(b >> 15);
+	return c;
 }
